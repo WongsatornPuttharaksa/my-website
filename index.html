@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RJ45 Lab – เกมเข้าหัวแลน ธีมอุปกรณ์ LINK</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap">
+<style>
+:root{color-scheme:light;--bg:#fff;--card:#f4f8fd;--ink:#10243d;--mut:#5b6b80;--ac:#0b63ce;--ok:#0a8f4d;--am:#d98a00;--bad:#d6334a;--ln:#d5e0ee;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:radial-gradient(900px 300px at 50% -80px,#cfe3ff,transparent),linear-gradient(#eaf2fd,#fff 320px);color:var(--ink);font-family:"Kanit","Sarabun","Noto Sans Thai",system-ui,sans-serif;min-height:100vh}
+main{max-width:820px;margin:0 auto;padding:12px 12px 28px}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:3px solid var(--ac);padding-bottom:6px}
+h1{font-size:1.2rem;margin:2px 0;color:var(--ac)}h1 small{color:var(--mut);font-weight:400;font-size:.72rem}
+h2,h3{margin:8px 0}
+#hud{display:flex;gap:10px;align-items:center;font-size:.82rem;color:var(--mut);flex-wrap:wrap}
+.bar{display:inline-block;width:90px;height:8px;background:var(--ln);border-radius:4px;overflow:hidden;vertical-align:middle}.bar i{display:block;height:100%;background:var(--ac)}
+.wo{border:1px solid var(--ln);border-left:5px solid var(--ac);background:var(--card);padding:6px 10px;margin:8px 0;font-size:.8rem;color:var(--ac);border-radius:6px}
+.steps{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0}
+.steps span{font-size:.74rem;padding:3px 10px;border:1px solid var(--ln);color:var(--mut);background:#fff;border-radius:99px;transition:.2s}
+.steps .on{background:var(--ac);color:#fff;border-color:var(--ac);font-weight:600;box-shadow:0 0 0 3px #0b63ce33}.steps .done{color:var(--ok);border-color:var(--ok)}
+.row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+#face{width:84px;height:92px;flex:none;border:1px solid var(--ln);background:var(--card);border-radius:12px}
+.bubble{background:var(--card);padding:9px 12px;font-size:.88rem;line-height:1.55;flex:1;min-height:64px;border:1px solid var(--ln);border-left:4px solid var(--ac);border-radius:10px}
+#st{width:100%;display:block;touch-action:none;user-select:none;-webkit-user-select:none;border:2px solid var(--ln);border-radius:14px;box-shadow:0 10px 28px #0b63ce26}
+#st text{fill:#5b6b80;font-family:inherit}
+#ctl{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.b{font:inherit;font-size:.86rem;border:1px solid var(--ac);background:#fff;color:var(--ink);padding:8px 14px;cursor:pointer;border-radius:10px;transition:.15s}
+.b:hover{background:#eaf2fd;transform:translateY(-1px)}
+.b:focus-visible,input:focus-visible{outline:2px solid var(--am);outline-offset:2px}
+.p{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}.p:hover{background:#0950a8}.sel{border-color:var(--ac);background:#e3efff;font-weight:600}
+input{font:inherit;padding:8px 12px;border:1px solid var(--ac);background:#fff;color:var(--ink);width:100%;max-width:260px;border-radius:10px}
+.hero{display:flex;gap:16px;align-items:center;background:var(--card);border:1px solid var(--ln);padding:18px;flex-wrap:wrap;border-radius:16px}
+.hero svg{width:140px;height:154px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin:8px 0}
+.card{text-align:left;line-height:1.5}.card small{color:var(--mut);display:block}.card em{color:var(--am);font-style:normal}
+.res{background:var(--card);padding:12px 14px;border:1px solid var(--ln);margin:8px 0;border-radius:12px}.res.win{border-color:var(--ok);background:#effaf4}
+.star{color:var(--am);font-size:1.3rem;letter-spacing:2px}
+.term{width:100%;margin:0;background:#0d1b2a;color:#7dffb0;padding:10px 12px;font-family:ui-monospace,Menlo,monospace;font-size:.74rem;border-radius:10px;white-space:pre-wrap;max-height:230px;overflow:auto;box-shadow:inset 0 0 18px #000}
+.ping{width:100%;background:#0d1b2a;border-radius:10px;padding:8px 12px;color:#7dffb0;font-size:.74rem}.ping svg{width:100%;height:70px;display:block}.ping text{fill:#7dffb0!important}
+.bad{color:var(--bad)}.mut{color:var(--mut);font-size:.82rem;margin:2px 0}
+.cf{position:fixed;top:-20px;font-size:22px;pointer-events:none;animation:fall 2.6s linear forwards;z-index:9}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+.pop{position:fixed;transform:translateX(-50%);font-weight:600;font-size:1.5rem;text-shadow:0 2px 8px #fff,0 0 2px #fff;pointer-events:none;animation:up 1.2s ease-out forwards;z-index:9;white-space:nowrap}@keyframes up{to{transform:translate(-50%,-60px);opacity:0}}
+.xp{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:10px 14px;margin:6px 0;font-size:.85rem}
+.badge{display:inline-block;font-size:.74rem;border:1px solid var(--am);color:var(--am);background:#fff8e8;border-radius:99px;padding:2px 9px;margin:4px 4px 0 0}.badge.off{filter:grayscale(1);opacity:.4}
+.rep{margin-top:10px;background:#fff;border:1px dashed var(--ac);border-radius:10px;padding:10px 12px;font-size:.8rem;position:relative}.rep table{width:100%;border-collapse:collapse;margin-top:6px}.rep td{padding:3px 0;border-bottom:1px solid var(--ln)}.rep td:last-child{text-align:right;font-weight:600}
+.stamp{position:absolute;right:12px;top:8px;transform:rotate(-8deg);border:3px solid;border-radius:8px;padding:0 10px;font-weight:700;font-size:1.1rem;letter-spacing:2px;opacity:.85}
+.b{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.ban{width:100%;display:block;border-radius:20px;box-shadow:0 12px 30px #0b63ce44;margin:4px 0 10px}
+.led{animation:bl 1.4s infinite}@keyframes bl{50%{opacity:.2}}
+.card{display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:14px;border-radius:16px;background:linear-gradient(#fff,#f1f6fd)}
+.card.sel{box-shadow:0 0 0 3px #0b63ce44,0 8px 20px #0b63ce22}
+.ct{font-weight:600;font-size:1rem}
+.ic{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;font-style:normal;font-size:1.6rem;background:linear-gradient(135deg,var(--g1),var(--g2));box-shadow:0 4px 10px #0b63ce33}
+.pins{display:flex;gap:3px;margin:2px 0}.pins i{width:14px;height:26px;border-radius:3px;border:1px solid #8d9db3;display:block}.pins b{font-size:.62rem;color:var(--mut);margin-right:4px;align-self:center;font-weight:400}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}.tiles div{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:10px 12px;font-size:1.4rem;line-height:1.35}.tiles b{display:block;font-size:.86rem}.tiles span{display:block;font-size:.72rem;color:var(--mut)}
+.go{font-size:1.05rem;padding:12px 26px;box-shadow:0 6px 16px #0b63ce55}
+.rot{display:none;text-align:center;font-size:.76rem;color:var(--am);margin:2px 0}
+@media(max-width:560px){main{padding:8px 8px 24px}h1{font-size:1rem}h1 small{display:block}.hero{padding:12px;gap:10px}.hero svg{width:90px;height:100px}.cards{grid-template-columns:1fr}.b{padding:12px 14px;min-height:44px}#face{width:60px;height:66px}.bubble{font-size:.8rem;min-height:56px;padding:7px 10px}.steps span{font-size:.66rem;padding:2px 7px}.term{font-size:.66rem;max-height:170px}#ctl .b{flex:1 1 auto}.wo{font-size:.7rem}input{max-width:none}.tiles{grid-template-columns:1fr}.tiles div{display:flex;gap:10px;align-items:center}.res h3{font-size:.95rem}}
+@media(max-width:560px) and (orientation:portrait){.rot{display:block}}
+.item{background:linear-gradient(#fff,#f1f6fd);border:1px solid var(--ln);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}.item.eqd{border-color:var(--ok);box-shadow:0 0 0 3px #0a8f4d22}.item small{color:var(--mut);line-height:1.45}.pv{width:100%;display:grid;place-items:center;background:var(--card);border-radius:12px;padding:6px;min-height:70px}.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.b:disabled{opacity:.45;cursor:not-allowed}
+.lp{display:inline-block;width:22px;height:22px;border-radius:50%;background:#1d3a4f;color:#cfe;font-size:.65rem;text-align:center;line-height:22px;margin:2px}.lp.on{background:#22b573;color:#fff}
+.rackbox{background:#0d1b2a;border-radius:12px;padding:10px;display:grid;gap:6px}.u{background:#17283d;border:1px solid #2c4666;border-radius:6px;padding:8px 12px;color:#bcd8ff;font-size:.82rem}.u:not(.on){color:#4d6a8c;border-style:dashed}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#35e08a;margin-left:8px;animation:bl 1.4s infinite}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<header><h1>🔌 RJ45 Lab <small>· ชุดเครื่องมือสไตล์ LINK · TIA/EIA-568</small></h1><div id="hud"></div></header>
+<div id="menu"></div>
+<div id="game" hidden>
+<div id="wo" class="wo"></div>
+<div id="steps" class="steps"></div>
+<div class="row"><svg id="face" viewBox="0 0 120 130"></svg><div class="bubble" id="say"></div></div>
+<div class="rot">📱↻ หมุนจอเป็นแนวนอนจะเล่นง่ายขึ้น</div><svg id="st" viewBox="0 0 720 320" role="img" aria-label="โต๊ะแล็บเข้าหัวแลน"></svg>
+<div id="ctl"></div>
+</div>
+</main>
+<script>
+const $=s=>document.querySelector(s),cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const STD={A:["wg","g","wo","b","wb","o","wbr","br"],B:["wo","o","wg","b","wb","g","wbr","br"]};
+const NMC={wo:"ขาว-ส้ม",o:"ส้ม",wg:"ขาว-เขียว",g:"เขียว",b:"น้ำเงิน",wb:"ขาว-น้ำเงิน",wbr:"ขาว-น้ำตาล",br:"น้ำตาล"};
+const CAB={B:{n:"Straight T568B",e:"BB",d:"PC → Switch ชั้น 3 · ปลาย B–B"},A:{n:"Straight T568A",e:"AA",d:"Patch panel ห้อง Server · ปลาย A–A"},X:{n:"Crossover A↔B",e:"AB",d:"Switch → Switch (ไม่มี Auto-MDIX) · ปลาย A–B"}};
+const COL={o:'#f08a24',g:'#2fa84f',b:'#2f6fd6',br:'#7a4a2a'};
+const STEPS=["ปอก","เรียงสี","ตัด","เสียบหัว","ย้ำ","เทสต์"];
+const TIP={1:'TIA/EIA-568: ปอกปลอกราว 25-35 มม. และห้ามบาดฉนวนของเส้นทองแดง โซนเขียวบนไม้บรรทัดคือระยะที่ดี',2:'ลากเส้นไปวางทับตำแหน่งอื่นเพื่อสลับ pin 1-2 และ 3-6 ต้องเป็นคู่สีเดียวกัน ไม่งั้นเกิด split pair และ crosstalk',3:'มาตรฐาน Cat5e ให้คลายเกลียวไม่เกิน 13 มม. เหลือ 10.5-13 มม. แล้วตัดให้ปลายเสมอกัน',4:'ปลอกสายต้องเข้าไปถึงจุดหนีบ (strain relief) และปลายทองแดงต้องชนผนังหน้าหัว',5:'ต้องบีบจนสุดให้เข็มทองจิกทะลุฉนวน และตัวหนีบปลอกแน่น',6:'ลากหัวทั้งสองปลายไปเสียบเครื่องเทสสาย แล้วกดปุ่ม TEST'};
+const LS={get(){try{return JSON.parse(localStorage.getItem('rj45st'+uk())||'{}')}catch(e){return{}}},set(k,v){try{const o=LS.get();if((o[k]||0)<v){o[k]=v;localStorage.setItem('rj45st'+uk(),JSON.stringify(o))}}catch(e){}}};
+const SS=n=>'★'.repeat(n)+'☆'.repeat(3-n),stars=p=>p>=88?3:p>=68?2:p>=45?1:0;
+const nm=()=>S&&P.scr=='play'?S.name:P.name,uk=n=>':'+String(n==null?nm():n).trim().toLowerCase();
+const PF={get(n){try{return JSON.parse(localStorage.getItem('rj45u'+uk(n))||'{}')}catch(e){return{}}},set(o,n){try{localStorage.setItem('rj45u'+uk(n),JSON.stringify(o))}catch(e){}}};
+const LVL=[[0,'ช่างฝึกหัด'],[100,'ช่างติดตั้ง'],[300,'ช่างเทคนิคเครือข่าย'],[700,'Network Technician'],[1500,'Network Engineer'],[3000,'RCDD Master']];
+const lv=x=>{let i=0;LVL.forEach((l,j)=>{if(x>=l[0])i=j});return i};
+const BADGES={perf:['🎯','Perfect Strip','ปอกสายได้ ~30 มม. แม่นยำทั้งสองปลาย'],speed:['⚡','Speed Demon','เสร็จภายใน 60 วินาที (โหมดแข่ง)'],zero:['📡','Zero Loss','ping 0% packet loss'],gig:['🚀','Gigabit Club','ลิงก์ 1000 Mbps'],clean:['💎','Flawless','ไม่มีข้อบกพร่องเลย']};
+function pop(t,c='#0a8f4d'){const r=$('#st').getBoundingClientRect(),s=document.createElement('div');s.className='pop';s.textContent=t;s.style.cssText=`left:${r.left+r.width/2}px;top:${r.top+r.height*.3}px;color:${c}`;document.body.appendChild(s);setTimeout(()=>s.remove(),1300)}
+const ITEMS=[
+{id:'cr0',slot:'cr',n:'คีมย้ำจั๊มพื้นฐาน',pr:0,c1:'#8a97a8',c2:'#4b5563',lab:'BASIC',spd:1,pf:.95,st:'ความเร็วบีบ ×1 · ย้ำสมบูรณ์ที่ 95%',d:'คีมเหล็กธรรมดาที่ติดมากับชุดเริ่มต้น ต้องกดนานและออกแรงมาก'},
+{id:'cr1',slot:'cr',n:'LINK US-8003 Ratchet',pr:150,c1:'#0b63ce',c2:'#2a3340',lab:'LINK US-8003',spd:1.3,pf:.92,st:'ความเร็วบีบ ×1.3 · ย้ำสมบูรณ์ที่ 92%',d:'คีมแบบมีเฟืองล็อก (ratchet) ต้องบีบครบจังหวะก่อนปล่อย ทำให้รอยย้ำสม่ำเสมอทุกหัว'},
+{id:'cr2',slot:'cr',n:'Gold Pro Crimper',pr:420,c1:'#e0a800',c2:'#2b2410',lab:'GOLD PRO',spd:1.7,pf:.86,st:'ความเร็วบีบ ×1.7 · ย้ำสมบูรณ์ที่ 86%',d:'คีมระดับช่างมืออาชีพ แกนเหล็กเสริมแรงบีบสูง ใช้ได้ทั้งหัว Cat5e และ Cat6'},
+{id:'sp0',slot:'sp',n:'คีมปอกสาย LINK',pr:0,c1:'#0b63ce',c2:'#2a3340',lab:'LINK',nk:.92,sl:2.2,st:'บาดทองแดงถ้ากดเกิน 92% · ความแม่นยำ ×1',d:'คีมปอกมาตรฐานในชุดเริ่มต้น ปรับแรงกดด้วยมือเอง'},
+{id:'sp1',slot:'sp',n:'Auto Stripper',pr:120,c1:'#22b573',c2:'#14323a',lab:'AUTO',nk:.96,sl:1.7,st:'บาดทองแดงถ้ากดเกิน 96% · ความแม่นยำ ×1.3',d:'ปรับความลึกใบมีดอัตโนมัติตามขนาดสาย ลดโอกาสบาดฉนวนเส้นทองแดง'},
+{id:'sp2',slot:'sp',n:'Laser Precision Stripper',pr:360,c1:'#e5484d',c2:'#2a2030',lab:'LASER',nk:1.1,sl:1.2,st:'ไม่บาดทองแดง · ความแม่นยำ ×1.8',d:'มีตัวจำกัดความลึกใบมีด ปอกได้สะอาดและความยาวเที่ยงตรงเกือบทุกครั้ง'},
+{id:'ct0',slot:'ct',n:'คีมตัดทั่วไป',pr:0,c1:'#e6ebf3',c2:'#0b63ce',lab:'LINK',tol:0,st:'ช่วงตัดมาตรฐาน 10.5-13 มม.',d:'คีมตัดในชุดเริ่มต้น ตัดได้ แต่ปลายอาจไม่เรียบเสมอกันนัก'},
+{id:'ct1',slot:'ct',n:'Flush Cutter',pr:100,c1:'#ffd93d',c2:'#2a3340',lab:'FLUSH',tol:.8,st:'ให้อภัยการเล็งพลาด ±0.8 มม.',d:'ใบตัดชิดเรียบ ตัดปลายสายให้เสมอเป็นระนาบเดียวกัน เสียบหัวง่ายขึ้น'},
+{id:'ct2',slot:'ct',n:'Ceramic Cutter',pr:300,c1:'#b86bff',c2:'#201a30',lab:'CERAMIC',tol:1.6,st:'ให้อภัยการเล็งพลาด ±1.6 มม.',d:'ใบเซรามิกคมนาน ตัดแล้วไม่ทำให้เส้นทองแดงแบน คะแนนการตัดสูงขึ้น'},
+{id:'cr3',slot:'cr',n:'Pink Lady Crimper',pr:110,c1:'#ff7eb6',c2:'#7a2a4f',lab:'PINK',spd:1.15,pf:.93,st:'ความเร็วบีบ ×1.15 · ย้ำสมบูรณ์ที่ 93%',d:'คีมสีชมพูหวาน น้ำหนักเบา มือเล็กจับถนัด ราคาเบาๆ สำหรับมือใหม่'},
+{id:'cr4',slot:'cr',n:'Mint Racer Crimper',pr:260,c1:'#2fd6a3',c2:'#134a3c',lab:'MINT',spd:1.45,pf:.9,st:'ความเร็วบีบ ×1.45 · ย้ำสมบูรณ์ที่ 90%',d:'ด้ามสีมินต์เคลือบกันลื่น สปริงคืนตัวไว ย้ำต่อเนื่องหลายเส้นไม่เมื่อย'},
+{id:'cr5',slot:'cr',n:'Carbon Black Elite',pr:700,c1:'#2b2f38',c2:'#111318',lab:'CARBON',spd:2,pf:.82,st:'ความเร็วบีบ ×2 · ย้ำสมบูรณ์ที่ 82%',d:'คีมคาร์บอนระดับสูงสุด ใช้กับงานติดตั้งเชิงพาณิชย์ ย้ำแม่นและเร็วที่สุดในร้าน'},
+{id:'sp3',slot:'sp',n:'Orange Safe Stripper',pr:70,c1:'#ff9a3d',c2:'#5a2f0a',lab:'ORANGE',nk:.94,sl:2,st:'บาดทองแดงถ้ากดเกิน 94% · แม่นยำ ×1.1',d:'ด้ามสีส้มสะดุดตา มีที่กันบาดอย่างง่าย เหมาะกับงานทั่วไป'},
+{id:'sp4',slot:'sp',n:'Violet Pro Stripper',pr:220,c1:'#a066ff',c2:'#2a1650',lab:'VIOLET',nk:.99,sl:1.5,st:'บาดทองแดงถ้ากดเกิน 99% · แม่นยำ ×1.5',d:'ใบมีดสองชั้นควบคุมความลึก ปอกปลอกได้สะอาดแทบไม่มีรอย'},
+{id:'sp5',slot:'sp',n:'Titan Black Stripper',pr:600,c1:'#3b414d',c2:'#12151b',lab:'TITAN',nk:1.1,sl:1,st:'ไม่บาดทองแดง · แม่นยำ ×2.2',d:'โครงไทเทเนียมและใบมีดปรับอัตโนมัติ ปอกได้เป๊ะที่ระยะมาตรฐาน'},
+{id:'ct3',slot:'ct',n:'Rose Snip',pr:60,c1:'#ff8fb1',c2:'#6b2540',lab:'ROSE',tol:.4,st:'ให้อภัยการเล็งพลาด ±0.4 มม.',d:'กรรไกรตัดสายสีชมพูขนาดเล็ก ตัดง่ายสำหรับมือใหม่'},
+{id:'ct4',slot:'ct',n:'Teal Precision Cutter',pr:200,c1:'#22c3c3',c2:'#0f3d44',lab:'TEAL',tol:1.1,st:'ให้อภัยการเล็งพลาด ±1.1 มม.',d:'ใบตัดคมสองด้านสีเขียวน้ำทะเล ตัดสายเสมอแม้จะกดไม่ตรงนัก'},
+{id:'ct5',slot:'ct',n:'Diamond Edge Cutter',pr:550,c1:'#2b2f38',c2:'#e0a800',lab:'DIAMOND',tol:2.2,st:'ให้อภัยการเล็งพลาด ±2.2 มม.',d:'ใบตัดเคลือบผงเพชร ตัดสะอาดทุกครั้ง ได้คะแนนตัดเต็มแม้เล็งคลาดเล็กน้อย'},
+{id:'ts0',slot:'ts',n:'เครื่องเทสพื้นฐาน',pr:0,c1:'#0b63ce',c2:'#0a4fa8',lab:'TX-1302',cb:0,hint:0,st:'โบนัสเหรียญ +0% · ตัดตัวเลือกผิด 0 ข้อ',d:'เครื่องเทสสาย LAN แบบ 2 ชิ้น (ตัวหลัก+ตัวรีโมต) ไฟ LED แสดงสถานะทีละ pin'},
+{id:'ts1',slot:'ts',n:'Pocket Tester สีส้ม',pr:120,c1:'#ff8a3d',c2:'#7a3a10',lab:'POCKET',cb:.05,hint:0,st:'โบนัสเหรียญ +5% · ตัดตัวเลือกผิด 0 ข้อ',d:'เครื่องเทสขนาดพกพา เหมาะติดกระเป๋าช่างไปทำงานนอกสถานที่'},
+{id:'ts2',slot:'ts',n:'LED Tester สีเขียว',pr:260,c1:'#22b573',c2:'#0a5a37',lab:'LED-PRO',cb:.1,hint:1,st:'โบนัสเหรียญ +10% · ตัดตัวเลือกผิด 1 ข้อ',d:'LED สว่างชัด ตรวจ wiremap ได้ครบ ช่วยให้หมอสายวินิจฉัยง่ายขึ้น'},
+{id:'ts3',slot:'ts',n:'Wiremap Pro สีม่วง',pr:450,c1:'#8b5cf6',c2:'#3b1a7a',lab:'WIREMAP',cb:.15,hint:1,st:'โบนัสเหรียญ +15% · ตัดตัวเลือกผิด 1 ข้อ',d:'ตรวจ split pair และ crosstalk พื้นฐานได้ เครื่องเทสที่ช่างเครือข่ายนิยมใช้'},
+{id:'ts4',slot:'ts',n:'Gold Certifier',pr:800,c1:'#e0a800',c2:'#6a4a00',lab:'GOLD-CERT',cb:.2,hint:2,st:'โบนัสเหรียญ +20% · ตัดตัวเลือกผิด 2 ข้อ',d:'เครื่องรับรองสายระดับมืออาชีพ วัดความยาว ความสูญเสีย และ NEXT ได้แม่นยำ'},
+{id:'ts5',slot:'ts',n:'Cert Master Black',pr:1200,c1:'#2b2f38',c2:'#111318',lab:'CERT-X',cb:.3,hint:2,st:'โบนัสเหรียญ +30% · ตัดตัวเลือกผิด 2 ข้อ',d:'รุ่นสูงสุด ออกใบรับรองสายตามมาตรฐาน TIA ได้ เหรียญโบนัสสูงสุดในร้าน'},
+{id:'rk6',slot:'rk',n:'UPS สำรองไฟ',pr:150,ic:'🔋',st:'โบนัส XP +3%',d:'เครื่องสำรองไฟ ให้เครือข่ายทำงานต่อได้เมื่อไฟดับ ป้องกันข้อมูลเสียหาย'},
+{id:'rk7',slot:'rk',n:'กล้อง IP (PoE)',pr:180,ic:'📷',st:'โบนัส XP +3%',d:'กล้องวงจรปิดที่ใช้สาย LAN เส้นเดียวทั้งส่งภาพและรับไฟเลี้ยง (PoE)'},
+{id:'rk1',slot:'rk',n:'Patch Panel 24 พอร์ต',pr:90,ic:'🎛️',st:'โบนัส XP +3%',d:'แผงพักสาย รับสาย UTP จากผนังแล้วต่อเข้าสวิตช์ด้วยสาย patch ทำให้ระบบเป็นระเบียบ'},
+{id:'rk2',slot:'rk',n:'Switch 24 พอร์ต Gigabit',pr:200,ic:'🔀',st:'โบนัส XP +3%',d:'สวิตช์ส่งข้อมูลเฉพาะไปยังเครื่องปลายทาง ต่างจากฮับที่ส่งให้ทุกพอร์ต'},
+{id:'rk3',slot:'rk',n:'Wi-Fi Access Point',pr:260,ic:'📶',st:'โบนัส XP +3%',d:'จุดกระจายสัญญาณไร้สาย ต่อเข้าสวิตช์ด้วยสาย LAN (ควรใช้ PoE)'},
+{id:'rk4',slot:'rk',n:'Router / Firewall',pr:380,ic:'🌐',st:'โบนัส XP +3%',d:'เชื่อมเครือข่ายภายในออกอินเทอร์เน็ต และกรองการเข้าถึงด้วยกฎ firewall'},
+{id:'rk5',slot:'rk',n:'ตู้ Rack 19 นิ้ว',pr:500,ic:'🗄️',st:'โบนัส XP +3%',d:'ตู้มาตรฐานสำหรับติดตั้งอุปกรณ์เครือข่ายเป็นชั้นๆ มีพัดลมระบายอากาศ'}];
+const TI={cr:'คีมย้ำหัว (Crimping tool) ใช้บีบหัว RJ45 ให้เข็มทองจิกทะลุฉนวนสายและหนีบปลอกให้แน่น คีมดีจะย้ำเร็วและสม่ำเสมอกว่า',sp:'คีมปอกสาย (Stripper) ปอกปลอกนอกของสาย UTP โดยไม่บาดฉนวนเส้นทองแดงข้างใน',ct:'คีมตัด (Cutter) ตัดปลายสายให้เสมอกัน เหลือส่วนคลายเกลียว 10.5-13 มม. ตามมาตรฐาน TIA/EIA-568',ts:'เครื่องเทสสาย (Cable tester) ตรวจว่าสายต่อถูก pin หรือไม่ ขาด ลัด หรือสลับ เครื่องรุ่นดีให้โบนัสเหรียญและช่วยในโหมดหมอสาย',rk:'อุปกรณ์เครือข่ายสำหรับสะสมเป็นห้อง Server ของคุณ แต่ละชิ้นให้โบนัส XP +3%'};
+const gi=(s,n)=>{const e=PF.get(n).eq||{};return ITEMS.find(i=>i.id==(e[s]||s+'0'))},gc=s=>{const i=gi(s);return [i.c1,i.c2,i.lab]};
+function prev(i){if(i.slot=='ts')return `<svg viewBox='0 0 130 60' width='130' height='60'><rect x='10' y='8' width='110' height='44' rx='9' fill='${i.c1}'/><rect x='18' y='14' width='64' height='14' rx='3' fill='#0e2a2a'/><text x='50' y='25' text-anchor='middle' style='font-size:8px;fill:#7dffd0'>${i.lab}</text>${[0,1,2,3,4,5,6,7].map(k=>`<circle cx='${22+k*12}' cy='42' r='3.5' fill='#7dffb0'/>`).join('')}</svg>`;return i.slot=='rk'?`<span style='font-size:2.4rem'>${i.ic}</span>`:`<svg viewBox='0 0 130 60' width='130' height='60'>${hdl(8,8,112,30,i.c1,i.c2)}${hdl(8,52,112,30,i.c1,i.c2)}<circle cx='44' cy='30' r='4' fill='#8b97a8'/><text x='65' y='58' text-anchor='middle' style='font-size:9px;fill:#5b6b80'>${i.lab}</text></svg>`}
+function buy(id){const it=ITEMS.find(x=>x.id==id),p=PF.get();if(!it||(p.coins||0)<it.pr||(p.own||[]).includes(id))return;p.coins-=it.pr;p.own=[...(p.own||[]),id];PF.set(p);beep(900,.1,'sine');setTimeout(()=>beep(1200,.12,'sine'),110);render()}
+function equip(id){const it=ITEMS.find(x=>x.id==id),p=PF.get();p.eq=Object.assign(p.eq||{},{[it.slot]:id});PF.set(p);beep(600,.08);render()}
+function room(own){return `<h3>🗄️ ห้อง Server ของ ${esc(P.name)}</h3><div class='rackbox'>${ITEMS.filter(i=>i.slot=='rk').map(i=>own.includes(i.id)?`<div class='u on'>${i.ic} ${i.n}<span class='dot'></span><span class='dot' style='animation-delay:.5s'></span></div>`:`<div class='u'>— ช่องว่าง —</div>`).join('')}</div>`}
+function shop(){const p=PF.get(),own=p.own||[],eq=p.eq||{},coins=p.coins||0,T=P.tab||'cr';
+const TB=[['cr','คีมย้ำหัว'],['sp','คีมปอกสาย'],['ct','คีมตัดสาย'],['ts','เครื่องเทสสาย'],['rk','ห้อง Rack']];
+const has=i=>i.pr==0||own.includes(i.id),on=i=>(eq[i.slot]||i.slot+'0')==i.id;
+const buyB=i=>`<button class='b p' onclick="buy('${i.id}')" ${coins<i.pr?'disabled':''}>ซื้อ 🪙 ${i.pr}</button>`;
+const card=i=>`<div class='item${on(i)?' eqd':''}'><div class='pv'>${prev(i)}</div><b>${i.n}</b><small>${i.d}</small><span class='mut'>${i.st}</span>${!has(i)?buyB(i):i.slot=='rk'?`<span class='badge'>✔ มีแล้ว</span>`:on(i)?`<span class='badge'>✔ กำลังสวมใส่</span>`:`<button class='b p' onclick="equip('${i.id}')">สวมใส่</button>`}</div>`;
+return `<h2>🛒 LINK Store · ร้านอุปกรณ์เครือข่าย</h2><div class='xp'><b>${esc(P.name)}</b> · 🪙 ${coins} เหรียญ <span class='mut'>(ได้จากโหมดแข่งกับบอท/เพื่อน เก็บแยกตามชื่อ)</span></div><div class='tabs'>${TB.map(t=>`<button class='b${T==t[0]?' sel':''}' onclick="P.tab='${t[0]}';render()">${t[1]}</button>`).join('')}</div><p class='mut'>${TI[T]}</p><div class='cards'>${ITEMS.filter(i=>i.slot==T).map(card).join('')}</div>${T=='rk'?room(own):`<p class='mut'>กด "สวมใส่" แล้วเริ่มงาน คีมที่สวมอยู่จะปรากฏในหน้าเข้าหัวแลนจริง</p>`}<p><button class='b p go' onclick="P.scr='setup';render()">← กลับเมนู</button></p>`}
+function pay(n,c){const p=PF.get(n);p.coins=(p.coins||0)+c;p.stt=p.stt||{};p.stt.tc=(p.stt.tc||0)+c;PF.set(p,n)}
+let D={};
+const FT=[['ok','ปกติ (PASS)'],['mis','สายสลับ (Miswire)'],['open','สายขาด (Open)'],['short','ลัดวงจร (Short)'],['split','Split Pair']];
+const EX={ok:'ทุกเส้นตรงตำแหน่งและ NEXT ผ่าน สายสมบูรณ์ ไม่ต้องแก้',mis:'ปลายหนึ่งเข้าผิดตำแหน่ง (สลับ pin) ต้องตัดหัวแล้วเรียงสีใหม่',open:'เส้นนั้นไม่มีสัญญาณ อาจขาดหรือเข็มทองไม่จิกถึงสายทองแดง ต้องย้ำใหม่',short:'สองเส้นติดกัน มักเกิดจากฉนวนถูกบาดหรือทองแดงแตะกันที่หัว',split:'ต่อตรงทุก pin แต่คู่บิดเกลียวถูกแยก (เช่น 3-6) เทส continuity ปกติไม่เห็น ต้องดู NEXT/crosstalk'};
+function docCase(){const r=n=>Math.floor(Math.random()*n),ty=FT[r(5)][0],a=r(8),b=(a+1+r(7))%8;let m=[0,1,2,3,4,5,6,7].map(i=>[i]),x='NEXT: PASS';
+if(ty=='mis'){m[a]=[b];m[b]=[a]}else if(ty=='open')m[a]=[];else if(ty=='short'){m[a]=[a,b];m[b]=[a,b]}else if(ty=='split')x='NEXT: FAIL (คู่ 3-6 กับ 4-5 ถูกแยก)';return{ty,m,x}}
+function dnext(){D.c=docCase();D.ans=-1;D.hid=FT.map((f,i)=>i).filter(i=>FT[i][0]!=D.c.ty).sort(()=>Math.random()-.5).slice(0,gi('ts').hint)}
+function docStart(){D={n:0,ok:0,coins:0};dnext();P.scr='doc';render()}
+function dans(i){if(D.ans>=0)return;D.ans=i;if(FT[i][0]==D.c.ty){D.ok++;D.coins+=20;beep(1000,.1,'sine')}else beep(200,.2,'sawtooth');render()}
+function dnext2(){if(D.n<4){D.n++;dnext();render();return}const c=Math.round((D.coins+(D.ok==5?25:0))*(1+gi('ts').cb));pay(P.name,c);const p=PF.get();p.stt=p.stt||{};if(D.ok==5)p.stt.dr=(p.stt.dr||0)+1;chk(p);PF.set(p);D.fin=c;D.end=1;if(D.ok==5)confetti();render()}
+function docView(){const p=PF.get(),t=gi('ts');
+if(D.end)return `<h2>🩺 หมอสาย · สรุปผล</h2><div class='xp'>ตอบถูก <b>${D.ok}/5</b>${D.ok==5?' 🎉 โบนัส Perfect +25':''} · ได้ <b>🪙 ${D.fin}</b> เหรียญ (รวมโบนัสเครื่องเทส)</div><p><button class='b p go' onclick='docStart()'>เล่นอีกรอบ</button> <button class='b' onclick="P.scr='setup';render()">กลับเมนู</button></p>`;
+const c=D.c,lit=j=>c.m.some(a=>a.includes(j)),lines=c.m.map((a,i)=>`${i+1} → ${a.length?a.map(j=>j+1).join('+'):'✕ (ไม่มีสัญญาณ)'}`).join('\n');
+return `<h2>🩺 หมอสาย · เคส ${D.n+1}/5</h2><div class='xp'>เครื่องเทส: <b style='color:${t.c1}'>${t.n}</b> · 🪙 ${p.coins||0}${t.hint?` · ตัดตัวเลือกผิดให้ ${t.hint} ข้อ`:''}</div><p class='mut'>ลูกค้าส่งสายที่ใช้ไม่ได้มา อ่านผลเครื่องเทสแล้ววินิจฉัยว่าเป็นอะไร (ตอบถูกข้อละ +20 🪙)</p><div class='ping' style='border-top:4px solid ${t.c1}'>ต้นทาง<div>${[0,1,2,3,4,5,6,7].map(j=>`<span class='lp on'>${j+1}</span>`).join('')}</div>ปลายทาง<div>${[0,1,2,3,4,5,6,7].map(j=>`<span class='lp${lit(j)?' on':''}'>${j+1}</span>`).join('')}</div></div><pre class='term'>$ tester --wiremap --next\n${lines}\n${c.x}</pre><div class='tabs'>${FT.map((f,i)=>D.hid.includes(i)?'':`<button class='b${D.ans==i?' sel':''}' ${D.ans>=0?'disabled':''} onclick='dans(${i})'>${f[1]}</button>`).join('')}</div>${D.ans>=0?`<div class='xp'>${FT[D.ans][0]==c.ty?'✅ ถูกต้อง +20 🪙':'❌ ยังไม่ใช่ คำตอบคือ <b>'+FT.find(f=>f[0]==c.ty)[1]+'</b>'}<br>${EX[c.ty]}<p><button class='b p' onclick='dnext2()'>${D.n<4?'เคสต่อไป ▶':'ดูผลสรุป'}</button></p></div>`:''}`}
+const MS=[{id:'m1',t:'ได้ ≥2 ดาว',r:30,ck:r=>r.st>=2},{id:'m2',t:'ping ไม่มี packet loss',r:35,ck:()=>S.link>0&&S.loss==0},{id:'m3',t:'ลิงก์ Gigabit 1000 Mbps',r:40,ck:()=>S.link==1000},{id:'m4',t:'เสร็จใน 100 วิ (โหมดแข่ง)',r:40,ck:(r,t)=>!tut()&&t<=100&&r.st>=1},{id:'m5',t:'ไม่บาดทองแดงเลย',r:25,ck:()=>!S.ends.some(x=>x.nick)},{id:'m6',t:'ย้ำสมบูรณ์ทั้ง 2 ปลาย',r:30,ck:()=>S.ends.every(x=>x.sc.crimp>=15)}];
+const ACH=[{id:'a1',n:'มือใหม่หัวแลน',ic:'🔰',d:'เข้าหัวครบ 1 เส้น',ck:(p,s)=>s.runs>=1},{id:'a2',n:'สิบเส้นเต็ม',ic:'🔟',d:'เข้าหัวครบ 10 เส้น',ck:(p,s)=>s.runs>=10},{id:'a3',n:'Perfect 3',ic:'🌟',d:'ได้ 3 ดาวติดกัน 3 เส้น',ck:(p,s)=>s.strk>=3},{id:'a4',n:'ล่าบอท',ic:'🤖',d:'ชนะบอท 5 ครั้ง',ck:(p,s)=>s.bw>=5},{id:'a5',n:'Time Attacker',ic:'⏱️',d:'ทำได้ ≥4 เส้นใน Time Attack รอบเดียว',ck:(p,s)=>s.ta>=4},{id:'a6',n:'ครบทุกใบงาน',ic:'📋',d:'ได้ 3 ดาวครบทั้ง 3 ใบงาน',ck:(p,s,b)=>['A','B','X'].every(k=>(b[k]||0)>=3)},{id:'a7',n:'นักสะสม',ic:'🛍️',d:'ซื้ออุปกรณ์ ≥8 ชิ้น',ck:p=>(p.own||[]).length>=8},{id:'a8',n:'เศรษฐีแลน',ic:'💰',d:'หาเหรียญสะสมรวม 1000',ck:(p,s)=>s.tc>=1000},{id:'a9',n:'หมอสายมือทอง',ic:'🩺',d:'ตอบถูก 5/5 ในโหมดหมอสาย',ck:(p,s)=>s.dr>=1}];
+const dk=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()},mis=()=>{const d=new Date(),s=d.getFullYear()*372+d.getMonth()*31+d.getDate();return[s%6,(s+2)%6,(s+4)%6]};
+function msn(p){const dn=(p.dm&&p.dm.d==dk())?p.dm.done:[];return `<div class='mut' style='margin-top:8px;clear:both'><b>📅 ภารกิจวันนี้</b> (ทำสำเร็จขณะเล่นเพื่อรับเหรียญ)${mis().map(i=>{const m=MS[i];return `<div>${dn.includes(m.id)?'✅':'⬜'} ${m.t} <b>+${m.r}🪙</b></div>`}).join('')}</div>`}
+function chk(pf){const sx=pf.stt=pf.stt||{},bs=LS.get(),got=[];pf.ach=pf.ach||{};ACH.forEach(a=>{if(!pf.ach[a.id]&&a.ck(pf,sx,bs)){pf.ach[a.id]=1;pf.coins=(pf.coins||0)+50;sx.tc=(sx.tc||0)+50;got.push(a)}});return got}
+function post(pf,r,st,time){const sx=pf.stt=pf.stt||{};sx.runs=(sx.runs||0)+1;sx.strk=st==3?(sx.strk||0)+1:0;if(st==3)sx.s3=(sx.s3||0)+1;if(!tut()&&(!sx.bt||time<sx.bt))sx.bt=time;
+const dd=pf.dm=(pf.dm&&pf.dm.d==dk())?pf.dm:{d:dk(),done:[]};r.ms=[];
+mis().forEach(i=>{const m=MS[i];if(!dd.done.includes(m.id)&&m.ck(r,time)){dd.done.push(m.id);pf.coins=(pf.coins||0)+m.r;sx.tc=(sx.tc||0)+m.r;r.ms.push(m.t+' +'+m.r)}});
+r.ach=chk(pf);PF.set(pf);if(r.ms.length||r.ach.length)confetti()}
+function trophy(){const p=PF.get(),s=p.stt||{},a=p.ach||{},n=ACH.filter(x=>a[x.id]).length,T=[['🔧','เส้นที่ทำ',s.runs||0],['🌟','3 ดาว',s.s3||0],['⚡','เวลาเร็วสุด',s.bt?s.bt+' วิ':'-'],['🤖','ชนะบอท',s.bw||0],['⏱️','Time Attack สูงสุด',(s.ta||0)+' เส้น'],['🪙','เหรียญสะสมรวม',s.tc||0]];
+return `<h2>🏆 ตู้โชว์รางวัล · ${esc(P.name)}</h2><div class='tiles'>${T.map(x=>`<div>${x[0]}<b>${x[2]}</b><span>${x[1]}</span></div>`).join('')}</div><h3>ความสำเร็จ ${n}/${ACH.length} <span class='mut'>(ปลดล็อกได้ +50 🪙)</span></h3><div class='cards'>${ACH.map(x=>`<div class='item${a[x.id]?' eqd':''}' style='${a[x.id]?'':'filter:grayscale(1);opacity:.55'}'><span style='font-size:1.8rem'>${x.ic}</span><b>${x.n}</b><small>${x.d}</small></div>`).join('')}</div><p><button class='b p go' onclick="P.scr='setup';render()">← กลับเมนู</button></p>`}
+function nextTA(){M.seed+=13;M.sh=[0,1].map(e=>shuf(STD[CAB[P.cable].e[e]],M.seed+e*7+1));newRun(P.name);go(1)}
+function award(){const rs=M.res;let msg='';
+if(M.bot){const me=rs[0],win=me.final>=M.bot.final,c=Math.round((win?({ez:40,md:70,hd:120}[P.bot]+me.st*10):15)*(1+gi('ts',me.name).cb));pay(me.name,c);if(win){const bp=PF.get(me.name);bp.stt=bp.stt||{};bp.stt.bw=(bp.stt.bw||0)+1;chk(bp);PF.set(bp,me.name)}msg=`<div class='xp'>${win?'🏆 ชนะบอท!':'💪 สู้ได้ดี แพ้บอทนิดเดียว'} ${esc(me.name)} ได้รับ <b>🪙 ${c}</b> เหรียญ <span class='mut'>(รวม ${PF.get(me.name).coins})</span> <button class='b' onclick="P.scr='shop';render()">🛒 ไปร้านค้า</button></div>`}
+else if(P.mode=='ta'){const k=rs.length,c=Math.round((k*12+rs.reduce((a,r)=>a+r.st*6,0))*(1+gi('ts',P.name).cb));pay(P.name,c);const p=PF.get(P.name);p.stt=p.stt||{};p.stt.ta=Math.max(p.stt.ta||0,k);chk(p);PF.set(p,P.name);msg=`<div class='xp'>⏱️ Time Attack: ทำได้ <b>${k}</b> เส้น คะแนนรวม <b>${rs.reduce((a,r)=>a+r.final,0)}</b> · ได้ <b>🪙 ${c}</b> เหรียญ</div>`}
+else if(P.mode=='pvp'){rs.forEach(r=>pay(r.name,Math.round(20*(1+gi('ts',r.name).cb))));msg=`<div class='xp'>🪙 ทุกคนได้รับ <b>20</b> เหรียญจากการแข่งขัน</div>`}
+else msg=`<div class='xp'>📘 โหมดสอนไม่ได้เหรียญ ลองแข่งกับบอทเพื่อหาเหรียญไปซื้ออุปกรณ์ใหม่ที่ร้านค้า 🛒</div>`;M.cn=msg}
+function banner(){let w='';STD.B.forEach((id,i)=>{const y=84+i*8;w+=wireP(`M30,${y} C230,${y} 300,${y+14-i} 480,${y+6}`,id,6)});let l='';for(let i=0;i<8;i++)l+=`<circle class="led" style="animation-delay:${(i*.37).toFixed(2)}s" cx="${578+i*16}" cy="80" r="4.5" fill="${i%3==2?'#ffb020':'#35e08a'}"/>`;return `<svg class="ban" viewBox="0 0 720 190" role="img" aria-label="RJ45 plug and switch"><defs><linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0a2447"/><stop offset="1" stop-color="#0b63ce"/></linearGradient></defs><rect width="720" height="190" rx="20" fill="url(#bg2)"/><circle cx="650" cy="20" r="90" fill="#fff" opacity=".06"/><circle cx="60" cy="190" r="70" fill="#fff" opacity=".06"/><text x="30" y="46" style="fill:#fff;font-size:30px;font-weight:700">RJ45 LAB</text><text x="30" y="68" style="fill:#bcd8ff;font-size:13px">เข้าหัวแลนให้เหมือนช่างมืออาชีพ · LINK toolkit</text>${w}<rect x="470" y="78" width="96" height="62" rx="8" fill="#dff0ff" fill-opacity=".92" stroke="#7fb4ee" stroke-width="2"/><path d="M476 92H540M476 102H540M476 112H540M476 122H540" stroke="#e0a800" stroke-width="2.4"/><rect x="440" y="84" width="40" height="50" rx="10" fill="#4aa3ff" stroke="#0b63ce" stroke-width="2"/><rect x="558" y="50" width="146" height="100" rx="12" fill="#12315f" stroke="#7fb4ee" stroke-width="2"/><rect x="560" y="102" width="12" height="28" fill="#0a1424"/>${l}<text x="578" y="124" style="fill:#7fb4ee;font-size:10px">GIGABIT · 1000M</text><text x="578" y="140" style="fill:#7dffb0;font-size:10px">● LINK UP</text></svg>`}
+function tiles(){return `<div class="tiles"><div>🛠️<b>6 ขั้นตอนเหมือนจริง</b><span>ปอก เรียงสี ตัด เสียบ ย้ำ เทสต์</span></div><div>📡<b>Ping &amp; iperf</b><span>วัด latency และ packet loss จากสายที่คุณทำ</span></div><div>🏅<b>เลเวล เหรียญ รายงาน</b><span>สะสม XP จนเป็น RCDD Master</span></div></div>`}
+function pins(k){const E=CAB[k].e,u=k=='X'?[E[0],E[1]]:[E[0]];return u.map(e=>`<div class="pins"><b>${e}</b>${STD[e].map(id=>{const c=COL[id.replace('w','')];return `<i style="background:${id[0]=='w'?`repeating-linear-gradient(135deg,#fff 0 3px,${c} 3px 6px)`:c}"></i>`}).join('')}</div>`).join('')}
+function prof(){const p=PF.get(),x=p.xp||0,i=lv(x),a=LVL[i][0],nx=LVL[i+1],pc=nx?(x-a)/(nx[0]-a)*100:100;return `<div class="xp"><button class="b p" style="float:right" onclick="P.scr='shop';render()">🛒 ร้านค้า · 🪙 ${p.coins||0}</button><button class="b" style="float:right;margin-right:6px" onclick="P.scr='trophy';render()">🏆</button><b>LV${i+1} · ${LVL[i][1]}</b> · ${x} XP${nx?` <span class="mut">(อีก ${nx[0]-x} XP ถึง ${nx[1]})</span>`:''}<div class="bar" style="width:100%;margin:4px 0"><i style="width:${pc}%"></i></div>${Object.keys(BADGES).map(k=>`<span class="badge${(p.badges||{})[k]?'':' off'}" title="${BADGES[k][2]}">${BADGES[k][0]} ${BADGES[k][1]}</span>`).join('')}${msn(p)}</div>`}
+function rep(x){const R=x.rep,ps=x.st>0&&R.link>0&&R.wm,c=ps?'#0a8f4d':'#d6334a';return `<div class="rep"><b>📄 CABLE TEST REPORT · ${M.wo}</b><span class="stamp" style="color:${c}">${ps?'PASS':'FAIL'}</span><table><tr><td>ชนิดสาย / มาตรฐาน</td><td>Cat5e UTP · ${CAB[P.cable].n}</td></tr><tr><td>Wiremap</td><td>${R.wm?(R.split?'SPLIT PAIR':'OK'):'MISWIRE'}</td></tr><tr><td>ปอกปลอก (ปลาย 1 / 2)</td><td>${R.L[0]} / ${R.L[1]} มม.</td></tr><tr><td>คลายเกลียว (≤13 มม.)</td><td>${R.w[0]} / ${R.w[1]} มม.</td></tr><tr><td>ความเร็วลิงก์</td><td>${R.link?R.link+' Mbps':'No link'}</td></tr><tr><td>Packet loss · RTT เฉลี่ย</td><td>${R.loss}% · ${R.av} ms</td></tr><tr><td>ผู้ทดสอบ · วันที่</td><td>${esc(x.name)} · ${new Date().toLocaleDateString('th-TH')}</td></tr></table><div>${x.bd.map(k=>`<span class="badge" title="${BADGES[k][2]}">${BADGES[k][0]} ${BADGES[k][1]}</span>`).join('')}</div><p class="mut">+${x.xp} XP${x.up?' · 🎉 เลื่อนระดับ!':''}</p>${(x.ms||[]).map(m=>`<p class='mut'>📅 ภารกิจสำเร็จ: ${m} 🪙</p>`).join('')}${(x.ach||[]).map(a=>`<p class='mut'>🏆 ปลดล็อก ${a.ic} ${a.n} +50 🪙</p>`).join('')}</div>`}
+let P={name:'',mode:'tut',cable:'B',bot:'md',p2:'',scr:'name'},M={},S=null,AC,last=0;
+const TG=()=>STD[CAB[P.cable].e[S.e]],tut=()=>P.mode=='tut';
+function beep(f=660,d=.08,t='square'){try{AC=AC||new AudioContext();const o=AC.createOscillator(),g=AC.createGain();o.type=t;o.frequency.value=f;g.gain.value=.04;o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
+function confetti(){const e=['🎉','✨','⭐','🔌','💙'];for(let i=0;i<36;i++){const s=document.createElement('span');s.className='cf';s.textContent=e[i%5];s.style.left=Math.random()*100+'vw';s.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(s);setTimeout(()=>s.remove(),3600)}}
+function rnd(s){return()=>(s=(s*16807)%2147483647)/2147483647}
+function shuf(a,seed){const r=rnd(seed),x=a.slice();for(let i=7;i>0;i--){const j=Math.floor(r()*(i+1));[x[i],x[j]]=[x[j],x[i]]}if(x.every((v,i)=>v==a[i]))[x[0],x[1]]=[x[1],x[0]];return x}
+const bon=t=>Math.round(cl(30-Math.max(0,t-100)*.3,0,30));
+const rank=v=>v>=92?'S เทพแลน':v>=80?'A ช่างฝีมือดี':v>=60?'B ช่างฝึกหัด':v>=40?'C มือใหม่':'D ลองอีกครั้ง';
+function face(m){const eyes=[44,76].map(x=>`<ellipse cx="${x}" cy="66" rx="8" ry="${m=='oh'?12:10}" fill="#3b2a7a"/><ellipse cx="${x}" cy="66" rx="5" ry="${m=='oh'?9:7}" fill="#6c8cff"/><circle cx="${x+3}" cy="62" r="3" fill="#fff"/><circle cx="${x-3}" cy="70" r="1.6" fill="#fff"/>`).join('');
+const mouth=m=='oh'?'<ellipse cx="60" cy="87" rx="4" ry="5" fill="#c44"/>':m=='sad'?'<path d="M52 89Q60 82 68 89" stroke="#c44" stroke-width="2.5" fill="none" stroke-linecap="round"/>':'<path d="M51 82Q60 94 69 82Z" fill="#f77" stroke="#c44" stroke-width="1.5" stroke-linejoin="round"/>';
+return `<path d="M26 104Q60 128 94 104L94 130H26Z" fill="#0b63ce"/><circle cx="22" cy="68" r="7" fill="#ffd9c4"/><circle cx="98" cy="68" r="7" fill="#ffd9c4"/><circle cx="60" cy="64" r="38" fill="#ffe3d3"/><path d="M24 54Q26 14 60 14Q94 14 96 54Q88 40 60 38Q32 40 24 54Z" fill="#0b63ce"/><path d="M22 54Q60 44 98 54L104 60Q60 50 16 60Z" fill="#0a4fa8"/><text x="60" y="33" text-anchor="middle" style="fill:#fff;font-size:11px;font-weight:700">LINK</text>${eyes}${mouth}`}
+
+/* ---------- เมนู ---------- */
+function menu(){const sel=(c,v)=>c==v?' sel':'',best=LS.get();
+if(P.scr=='name')return `${banner()}<div class="hero"><svg id="hf" viewBox="0 0 120 130"></svg><div><h2>&gt; login: ระบุชื่อช่างเทคนิค</h2><p class="mut">พี่ลิงค์ AI ผู้ช่วยแล็บ จะสอนและตรวจงานของคุณตามมาตรฐาน TIA/EIA-568 พร้อมทดสอบ ping จริงหลังเข้าหัวเสร็จ</p><input id="nm" maxlength="14" placeholder="ชื่อของคุณ" value="${esc(P.name)}" onkeydown="if(event.key=='Enter')toSetup()"><p><button class="b p" onclick="toSetup()">เข้าสู่ระบบ</button></p></div></div>${tiles()}`;
+if(P.scr=='setup')return `<h2>&gt; user: ${esc(P.name)}</h2>${prof()}<h3>1) เลือกโหมด</h3><div class="cards">
+<button class="b card${sel(P.mode,'tut')}" onclick="P.mode='tut';render()"><i class="ic" style="--g1:#35c98a;--g2:#0a8f4d">📘</i><span class="ct">โหมดสอน</span><small>ไม่จับเวลา มีโซนบอกระยะและคำแนะนำมาตรฐาน</small></button>
+<button class="b card${sel(P.mode,'bot')}" onclick="P.mode='bot';render()"><i class="ic" style="--g1:#7db7f7;--g2:#0b63ce">🤖</i><span class="ct">แข่งกับบอท</span><small>คะแนนงาน + ความเร็ว</small></button>
+<button class="b card${sel(P.mode,'pvp')}" onclick="P.mode='pvp';render()"><i class="ic" style="--g1:#ffb347;--g2:#e5484d">🆚</i><span class="ct">แข่งกับเพื่อน</span><small>ผลัดกันเล่น สายและลำดับสีชุดเดียวกัน</small></button>
+<button class="b card${sel(P.mode,'ta')}" onclick="P.mode='ta';render()"><i class="ic" style="--g1:#ff6b6b;--g2:#c2185b">⏱️</i><span class="ct">Time Attack 5 นาที</span><small>เข้าหัวให้ได้มากที่สุด เหรียญตามจำนวนและคุณภาพ</small></button>
+<button class="b card${sel(P.mode,'dr')}" onclick="P.mode='dr';render()"><i class="ic" style="--g1:#a78bfa;--g2:#6d28d9">🩺</i><span class="ct">หมอสาย (ซ่อมสายเสีย)</span><small>อ่านผลเครื่องเทส วินิจฉัยสายเสีย 5 เคส</small></button></div>
+${P.mode=='bot'?`<p>ระดับบอท: ${[['ez','ง่าย'],['md','กลาง'],['hd','ยาก']].map(x=>`<button class="b${sel(P.bot,x[0])}" onclick="P.bot='${x[0]}';render()">${x[1]}</button>`).join(' ')}</p>`:''}
+${P.mode=='pvp'?`<p>ผู้เล่นคนที่ 2: <input maxlength="14" placeholder="ชื่อเพื่อน" value="${esc(P.p2)}" oninput="P.p2=this.value"></p>`:''}
+<h3>2) ใบงาน (ต้องเข้าหัวทั้ง 2 ปลาย)</h3><div class="cards">${Object.keys(CAB).map(k=>`<button class="b card${sel(P.cable,k)}" onclick="P.cable='${k}';render()"><span class="ct">${CAB[k].n}</span>${pins(k)}<small>${CAB[k].d}</small><em class="star">${SS(best[k]||0)}</em></button>`).join('')}</div>
+<p><button class="b" onclick="P.scr='name';render()">← ออกจากระบบ</button> <button class="b p go" onclick="startMatch()">▶ เริ่มงาน</button></p>`;
+if(P.scr=='shop')return shop();
+if(P.scr=='doc')return docView();
+if(P.scr=='trophy')return trophy();
+if(P.scr=='hand')return `<div class="hero"><svg id="hf" viewBox="0 0 120 130"></svg><div><h2>&gt; ส่งเครื่องต่อให้ ${esc(P.p2||'เพื่อน')}</h2><p class="mut">${esc(P.name)} ส่งงานแล้ว (ซ่อนผลไว้ก่อน) ผู้เล่นคนที่ 2 ได้ใบงานเดียวกัน</p><button class="b p" onclick="begin(1)">${esc(P.p2||'เพื่อน')} พร้อมแล้ว</button></div></div>`;
+if(P.scr=='result'){const r=M.res.slice().sort((a,b)=>b.final-a.final||a.time-b.time),t=tut();
+return `<h2>${t?'&gt; ผลโหมดสอน':P.mode=='ta'?'&gt; ผล Time Attack ⏱️':'&gt; ผู้ชนะ: '+esc(r[0].name)+' 🏆'}</h2><p class="mut">${M.wo} · ${CAB[P.cable].n}</p>${M.cn||''}`+r.map((x,i)=>`<div class="res${i==0&&!t?' win':''}"><h3>${esc(x.name)} — ${t?x.q+'/100':x.final+' คะแนน'} · เกรด ${rank(t?x.q:x.final/1.3)}</h3><div class="star">${SS(x.st)}</div><p class="mut">คุณภาพงาน ${x.q}/100${t?'':` · โบนัสความเร็ว +${x.bonus} · เวลา ${x.time} วิ`}</p>${x.notes?(x.notes.length?`<p class="bad">${x.notes.join('<br>')}</p>`:'<p style="color:var(--ok)">ไม่พบข้อบกพร่อง สายผ่านมาตรฐาน</p>'):''}${x.rep?rep(x):''}</div>`).join('')+`<p><button class="b p" onclick="startMatch()">เล่นอีกรอบ</button> <button class="b" onclick="P.scr='setup';render()">กลับเมนู</button> <button class="b" onclick="P.scr='shop';render()">🛒 ร้านค้า</button></p>`}
+return ''}
+function toSetup(){const v=($('#nm').value||'').trim();if(!v){$('#nm').focus();return}P.name=v;P.scr='setup';render()}
+function render(){const pl=P.scr=='play';$('#game').hidden=!pl;$('#menu').hidden=pl;if(pl)draw();else{$('#menu').innerHTML=menu();const f=$('#hf');if(f)f.innerHTML=face('happy');hud()}}
+
+/* ---------- แมตช์ ---------- */
+function mkBot(){const lv={ez:[58,12,170],md:[80,8,120],hd:[93,5,85]}[P.bot],n=["ฮารุกะ","เรย์","มิซึกิ","ไคโตะ"][Math.floor(Math.random()*4)];const q=cl(Math.round(lv[0]+(Math.random()*2-1)*lv[1]),0,100),t=Math.round(lv[2]*(.85+Math.random()*.3)),b=bon(t);return{name:'🤖 '+n,q,time:t,bonus:b,final:q+b,st:stars((q+b)/1.3)}}
+function startMatch(){if(P.mode=='dr'){docStart();return}if(P.mode=='pvp'&&!P.p2.trim())P.p2='เพื่อน';M={seed:1+Math.floor(Math.random()*9e5),res:[],who:0,wo:'WO-'+(1000+Math.floor(Math.random()*9000)),bot:P.mode=='bot'?mkBot():null,ta0:performance.now()};M.sh=[0,1].map(e=>shuf(STD[CAB[P.cable].e[e]],M.seed+e*7+1));begin(0)}
+function begin(w){M.who=w;newRun(w?P.p2:P.name);P.scr='play';$('#game').hidden=false;$('#menu').hidden=true;go(1)}
+function resetEnd(){Object.assign(S,{step:1,bx:420,hold:0,holding:false,done:0,L:0,nick:0,order:[],sel:-1,hint:tut(),hu:0,cx:520,cut:0,w:0,ox:0,drag:0,anc:0,fin:0,cdone:0,sc:{},msg:'',mood:'happy',slide:0,tw:0,dg:-1,dp:{x:0,y:0},d0:{x:0,y:0},hist:[]})}
+function newRun(name){S={name,e:0,t0:performance.now(),ends:[],hintUsed:0,tstep:0,pg:-1,po:{x:0,y:0},pp:[{x:250,y:250},{x:470,y:250}],seat:[0,0],ready:0,testing:0,log:[],link:0,loss:0,split:0,fdone:0,pa:[],pc:0};resetEnd()}
+const errs=()=>S.order.filter((v,i)=>v!=TG()[i]).length;
+function hud(){const h=$('#hud');if(!S||P.scr!='play'){h.textContent=P.name?'user: '+P.name:'';return}const t=Math.floor((performance.now()-S.t0)/1000);h.innerHTML=P.mode=='ta'?`⏳ เหลือ ${Math.max(0,Math.round((3e5-performance.now()+M.ta0)/1000))} วิ · สายที่ ${M.res.length+1} · ${esc(S.name)}`:tut()?'📘 TUTORIAL':`⏱ ${t}s`+(M.bot?` · ${M.bot.name} <span class="bar"><i style="width:${Math.min(100,t/M.bot.time*100)}%"></i></span>`:'')+` · ${esc(S.name)}`}
+setInterval(hud,300);
+function go(n){S.step=n;S.mood='happy';const tg='T568'+CAB[P.cable].e[S.e],pre=`ปลายที่ ${S.e+1}/2 (${tg}) `;
+if(n==1)S.msg=pre+'ขั้น 1 ปอกปลอก: เลื่อนเลือกจุดวางคีม (~30 มม.) แล้วกดค้างให้ใบมีดบีบ ปล่อยในโซนเขียว กดเกินจะบาดทองแดง';
+if(n==2){S.order=M.sh[S.e].slice();S.tw=1;anim(900,p=>S.tw=1-p);S.msg=pre+'ขั้น 2 คลายเกลียวและเรียงสีตาม '+tg+': กดค้างที่เส้นแล้วลากไปวางทับตำแหน่งที่ต้องการเพื่อสลับ'+(tut()?'':' (ดู pinout โดนหัก 5 คะแนน)')}
+if(n==3){S.sc.order=Math.max(0,25-errs()*4);S.cx=600-S.L*6+72;S.msg=(errs()?`ยังผิด ${errs()} ตำแหน่ง ไปต่อได้แต่คะแนนหาย `:'เรียงถูกครบ! ')+'ขั้น 3 ตัดสาย: กดเลื่อนเล็ง ปล่อยเพื่อตัด เหลือ 10.5-13 มม.'}
+if(n==4)S.msg='ขั้น 4 เสียบหัว: ลากสายไปทางขวาจนปลายทุกเส้นชนผนังหน้า ปลอกต้องเข้าไปถึงเส้นประ';
+if(n==5){S.hold=0;S.msg='ขั้น 5 ย้ำหัว: กดค้างที่โต๊ะเพื่อบีบคีมจนสุด (มีเสียงกึก) แล้วค่อยปล่อย'}
+if(n==6){S.tstep=0;S.msg='ขั้น 6 ทดสอบ: ลากหัว RJ45 ทั้งสองปลายไปเสียบช่องเครื่องเทสสาย แล้วกดปุ่ม TEST เพื่อตรวจ continuity และ ping'}
+if(n<7&&tut())S.msg+=' 💡 '+TIP[n];draw()}
+const K=i=>S.ends[1].order.indexOf(S.ends[0].order[i]),X=i=>STD[CAB[P.cable].e[1]].indexOf(STD[CAB[P.cable].e[0]][i]);
+function endDone(){S.ends.push({sc:S.sc,order:S.order.slice(),w:S.w,L:S.L,nick:S.nick,err:errs()});if(S.e<1){S.e++;resetEnd();go(1)}else go(6)}
+function runTest(){S.testing=1;S.tstep=0;S.log=[];S.pc=0;S.pa=[];const iv=setInterval(()=>{S.tstep++;const ok=K(S.tstep-1)==X(S.tstep-1);beep(ok?880:200,.1,ok?'sine':'sawtooth');if(S.tstep>=8){clearInterval(iv);netlog()}draw()},420)}
+function netlog(){const E=S.ends,pr=id=>id.replace('w','');let loss=0,gig=1,vit=1;
+E.forEach(x=>{const o=x.order,ch=(a,b)=>pr(o[a])==pr(o[b]);if(!ch(0,1)||!ch(2,5))vit=0;if(!ch(3,4)||!ch(6,7))gig=0;if(x.w>13.2)loss+=(x.w-13.2)*4;if(x.nick)loss+=3;if(x.sc.crimp<15)loss+=2});
+const bad=[...Array(8).keys()].some(i=>K(i)!=X(i));loss=Math.min(60,Math.round(loss+(vit&&gig?0:5)));
+const sp=bad?0:(!vit||loss>25)?10:(!gig||loss>4)?100:1000;S.badMap=bad;S.link=sp;S.split=!(vit&&gig);
+const lostN=bad?10:Math.round(loss/10);S.loss=lostN*10;
+const lost=new Set(Array.from({length:lostN},(_,k)=>Math.floor((k+.5)*10/Math.max(1,lostN)))),base=.35+loss*.04;
+const pa=[...Array(10).keys()].map(i=>lost.has(i)?null:+(base*(.7+Math.random()*.8)+(i?0:.25)).toFixed(2));S.pa=pa;
+const ok=pa.filter(v=>v!=null),mn=ok.length?Math.min(...ok):0,mx=ok.length?Math.max(...ok):0,av=ok.length?ok.reduce((a,b)=>a+b,0)/ok.length:0,md=ok.length?Math.sqrt(ok.reduce((a,b)=>a+(b-av)**2,0)/ok.length):0;
+const bw=sp?(({1000:941,100:94.1,10:9.4})[sp]*(1-S.loss/100)).toFixed(1):0;
+const pl=pa.map((v,i)=>!sp?`From 192.168.1.2 icmp_seq=${i+1} Destination Host Unreachable`:v==null?`Request timeout for icmp_seq ${i+1}`:`64 bytes from 192.168.1.1: icmp_seq=${i+1} ttl=64 time=${v} ms`);
+const L=sp?['$ ethtool eth0','Link detected: yes',`Speed: ${sp}Mb/s  Duplex: Full`,'$ ping -c 10 192.168.1.1',...pl,'--- 192.168.1.1 ping statistics ---',`10 packets transmitted, ${10-lostN} received, ${S.loss}% packet loss`,`rtt min/avg/max/mdev = ${mn.toFixed(2)}/${av.toFixed(2)}/${mx.toFixed(2)}/${md.toFixed(2)} ms`,'$ iperf3 -c 192.168.1.1',`[  5]  0.00-10.00 sec  ${bw} Mbits/sec`]:['$ ethtool eth0','Link detected: no','$ ping -c 10 192.168.1.1',...pl,'--- 192.168.1.1 ping statistics ---','10 packets transmitted, 0 received, 100% packet loss'];
+let i=0;const iv=setInterval(()=>{const ln=L[i++];S.log.push(ln);if(/^64 bytes|^Request timeout|Unreachable/.test(ln)){S.pc++;beep(ln[0]=='6'?1200:220,.03,'sine')}else beep(900,.02,'sine');if(i>=L.length){clearInterval(iv);finishRun()}draw()},i<4?300:230)}
+function finishRun(){let q=Math.round(S.ends.reduce((a,e)=>a+Object.values(e.sc).reduce((x,y)=>x+y,0),0)/2)-S.hintUsed*5;q=Math.max(0,S.link==0?Math.min(q,40):S.link==10?Math.min(q,60):S.link==100?Math.min(q,85):q);
+const time=Math.round((performance.now()-S.t0)/1000),b=tut()?0:bon(time),n=[];
+S.ends.forEach((x,i)=>{const p=`ปลายที่ ${i+1}: `;if(x.err)n.push(p+`สลับสี ${x.err} ตำแหน่ง`);if(x.nick)n.push(p+'ใบมีดบาดทองแดง');if(x.w>13.2)n.push(p+'คลายเกลียวเกิน 13 มม. ผิดมาตรฐาน / ปลอกไม่เข้าหัว');if(x.L<22)n.push(p+'ปอกสั้นไป');if(x.L>36)n.push(p+'ปอกยาวไป');if(x.sc.crimp<15)n.push(p+'ย้ำไม่สุดแรง')});
+if(S.hintUsed)n.push('ใช้ pinout ช่วย (-5)');if(S.badMap)n.push('เทสเตอร์: ลำดับสายไม่ตรงกับชนิดสายที่ต้องการ (NO LINK)');if(S.split&&!S.badMap)n.push('พบ split pair: คู่สายไม่ตรงมาตรฐาน เกิด crosstalk');
+n.push(`ผลลิงก์: ${S.link?S.link+' Mbps':'ไม่ติด'} · ping packet loss ${S.loss}%`);
+const f=q+b,st=stars(tut()?q:f/1.3),r={name:S.name,q,time,bonus:b,final:f,st,notes:n};const okp=S.pa.filter(v=>v!=null),av=okp.length?(okp.reduce((a,c)=>a+c,0)/okp.length).toFixed(2):'-',bd=[];
+if(S.ends.every(x=>Math.abs(x.L-30)<=3&&!x.nick))bd.push('perf');if(!tut()&&time<=60)bd.push('speed');if(S.link&&S.loss==0)bd.push('zero');if(S.link==1000)bd.push('gig');if(n.length==1&&st==3)bd.push('clean');
+const pf=PF.get(),old=pf.xp||0,rkn=ITEMS.filter(i=>i.slot=='rk'&&(pf.own||[]).includes(i.id)).length,xp=Math.round(((tut()?Math.round(q/2):f)+bd.length*15)*(1+.03*rkn));pf.xp=old+xp;pf.badges=Object.assign(pf.badges||{},Object.fromEntries(bd.map(k=>[k,1])));PF.set(pf);
+r.bd=bd;r.xp=xp;r.up=lv(pf.xp)>lv(old);r.rep={L:S.ends.map(x=>x.L.toFixed(0)),w:S.ends.map(x=>x.w.toFixed(1)),link:S.link,loss:S.loss,av,wm:!S.badMap,split:S.split};if(r.up)confetti();
+M.res.push(r);LS.set(P.cable,st);post(pf,r,st,time);S.mood=st>=2?'happy':st==1?'oh':'sad';S.msg=st==3?'3 ดาว! สายระดับมาตรฐานโรงงานเลยครับ ✨':st==2?'2 ดาว สายใช้งานได้ดี':st==1?'1 ดาว ผ่านแบบเฉียดฉิว ดูรายงานข้อบกพร่องนะ':'ไม่ได้ดาว สายนี้ใช้งานจริงไม่ได้ ลองใหม่!';S.fdone=1;if(st==3)confetti();draw()}
+function after(){if(P.mode=='ta'&&performance.now()-M.ta0<3e5){nextTA();return}if(P.mode=='pvp'&&M.who==0)P.scr='hand';else{award();if(M.bot)M.res.push(M.bot);P.scr='result'}render()}
+
+/* ---------- วาด ---------- */
+const DEFS='<defs><linearGradient id="jk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7db7f7"/><stop offset="1" stop-color="#2c6fcf"/></linearGradient><linearGradient id="bn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e3ecf8"/></linearGradient><pattern id="gr" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0H0V30" fill="none" stroke="#9db4d0" stroke-opacity=".28"/></pattern></defs><rect width="720" height="320" fill="url(#bn)"/><rect width="720" height="320" fill="url(#gr)"/>';
+function wireP(d,id,sw=7){const wh=id[0]=='w',c=COL[id.replace('w','')]||'#999';return `<path d="${d}" fill="none" stroke="#8d9db3" stroke-width="${sw+2}" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${wh?'#fbfbfb':c}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"/>`+(wh?`<path d="${d}" fill="none" stroke="${c}" stroke-width="${sw}" stroke-dasharray="6 6"/>`:'')+`<path d="${d}" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="${Math.max(1,sw/4)}" transform="translate(0 -${sw/4})"/>`}
+function jacket(x1,x2,y=132,h=56){const w=Math.max(0,x2-x1);return `<rect x="${x1}" y="${y+7}" width="${w}" height="${h}" rx="8" fill="#1a2b45" opacity=".16"/><rect x="${x1}" y="${y}" width="${w}" height="${h}" rx="8" fill="url(#jk)" stroke="#4d5f85" stroke-width="1.5"/><rect x="${x1}" y="${y+6}" width="${w}" height="5" rx="2.5" fill="#fff" opacity=".3"/>`}
+function twist(yc,a,b,x1,x2,amp=3.2){const p1=[],p2=[];for(let x=x1;x<=x2;x+=4){const o=amp*Math.sin(x/4);p1.push(x+','+(yc+o));p2.push(x+','+(yc-o))}return wireP('M'+p1.join(' L'),a,5)+wireP('M'+p2.join(' L'),b,5)}
+const PAIRS=[['wo','o'],['wg','g'],['b','wb'],['wbr','br']];
+const SK='#f3c9a6',SKS='#d9a47e',LB='#0b63ce';
+function fist(x,y,w,h,arm){const hz=arm=='r';let sl='';
+if(arm=='r')sl=`<rect x="${x+w-8}" y="${y+3}" width="400" height="${h-6}" rx="8" fill="#fff" stroke="#c3d2e6"/><rect x="${x+w+8}" y="${y+3}" width="9" height="${h-6}" fill="${LB}"/>`;
+if(arm=='u')sl=`<rect x="${x+3}" y="${y-400}" width="${w-6}" height="408" rx="8" fill="#fff" stroke="#c3d2e6"/><rect x="${x+3}" y="${y-16}" width="${w-6}" height="9" fill="${LB}"/>`;
+let f='';for(let k=1;k<4;k++)f+=hz?`<path d="M${x+4} ${y+h*k/4}H${x+w*.7}" stroke="${SKS}" stroke-width="1.5" fill="none"/>`:`<path d="M${x+w*k/4} ${y+4}V${y+h*.7}" stroke="${SKS}" stroke-width="1.5" fill="none"/>`;
+return sl+`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${Math.min(w,h)/3}" fill="${SK}" stroke="${SKS}" stroke-width="1.5"/>`+f+(hz?`<ellipse cx="${x+w*.4}" cy="${y+2}" rx="${w*.3}" ry="6" fill="${SK}" stroke="${SKS}"/>`:`<ellipse cx="${x+2}" cy="${y+h*.35}" rx="6" ry="${h*.25}" fill="${SK}" stroke="${SKS}"/>`)}
+function pinch(x,y){return `<rect x="${x+20}" y="${y-12}" width="500" height="24" rx="8" fill="#fff" stroke="#c3d2e6"/><rect x="${x+48}" y="${y-12}" width="8" height="24" fill="${LB}"/><ellipse cx="${x+10}" cy="${y-6}" rx="18" ry="7" fill="${SK}" stroke="${SKS}"/><ellipse cx="${x+8}" cy="${y+6}" rx="15" ry="6" fill="${SK}" stroke="${SKS}"/>`}
+function hdl(x0,y0,x1,y1,c1,c2){const gx=x0+(x1-x0)*.42,gy=y0+(y1-y0)*.42;return `<path d="M${x0} ${y0}L${x1} ${y1}" stroke="${c1}" stroke-width="14" stroke-linecap="round"/><path d="M${gx} ${gy}L${x1} ${y1}" stroke="${c2}" stroke-width="17" stroke-linecap="round"/>`}
+function plier(x,h,c1,c2,lab){const y1=110+h*20,y2=188-h*20,ex=x+92,ty=100+h*20,by=220-h*20;
+return hdl(x+4,y1+8,ex,ty,c1,c2)+hdl(x+4,y2+14,ex,by,c1,c2)+`<rect x="${x-8}" y="${y1}" width="16" height="22" rx="3" fill="#d5dce8" stroke="#8b97a8"/><rect x="${x-8}" y="${y2}" width="16" height="22" rx="3" fill="#d5dce8" stroke="#8b97a8"/><circle cx="${x+26}" cy="${(y1+y2+22)/2}" r="5" fill="#8b97a8"/><text x="${x+34}" y="${y1+(ty-y1)*.3+4}" style="fill:#fff;font-weight:700;font-size:9px">${lab}</text>`+fist(ex-30,ty-6,48,by-ty+12,'r')}
+function boot(x,y=132,h=56){let r='';for(let k=1;k<5;k++)r+=`<path d="M${x+k*12} ${y+5}V${y+h-5}" stroke="#2d79d6" stroke-width="2"/>`;return `<rect x="${x}" y="${y}" width="70" height="${h}" rx="12" fill="#4aa3ff" fill-opacity=".92" stroke="${LB}" stroke-width="1.5"/>`+r}
+function hands(){const n=S.step;
+if(n==2){const jx=600-S.L*6;return fist(Math.max(70,jx-120),120,56,80,'u')+(S.dg>=0?pinch(S.dp.x,S.dp.y):'')}
+if(n==4){const je=450+S.ox-S.w*6;return fist(Math.max(20,je-210),120,56,80,'u')}
+if(n==6&&S.pg>=0){const q=S.pp[S.pg];return pinch(q.x+(S.pg?-40:36),q.y)}
+return ''}
+function d1(){const bx=S.bx;let s=DEFS;
+for(let m=0;m<=50;m+=5){const x=600-m*6;s+=`<line x1="${x}" x2="${x}" y1="205" y2="${m%10?211:218}" stroke="#8a9bb0"/>`+(m%10==0?`<text x="${x}" y="234" text-anchor="middle" font-size="11">${m}</text>`:'')}
+s+=`<text x="672" y="234" font-size="11">mm</text>`+(tut()?'<rect x="390" y="198" width="60" height="5" fill="#22b573" opacity=".85"/>':'');
+if(!S.done){s+=jacket(60,600)+`<line x1="${bx}" x2="${bx}" y1="96" y2="224" stroke="#e5484d" stroke-dasharray="4 3"/>`+plier(bx,S.hold,...gc('sp'))+fist(104,120,56,80,'u')+`<text x="${bx}" y="262" text-anchor="middle" font-size="12">strip ${((600-bx)/6).toFixed(0)} mm</text><rect x="160" y="284" width="400" height="14" rx="7" fill="#dde6f1"/><rect x="${160+400*.55}" y="284" width="${400*.37}" height="14" fill="#22b573" opacity=".75"/><rect x="160" y="284" width="${400*S.hold}" height="14" rx="7" fill="${LB}"/><text x="360" y="312" text-anchor="middle" font-size="11">blade pressure (ปล่อยในโซนเขียว)</text>`}
+else{s+=jacket(60,bx)+`<g opacity="${1-S.slide}" transform="translate(${S.slide*150} 0)">${jacket(bx,600)}</g>`;PAIRS.forEach((p,i)=>s+=twist(142+i*12,p[0],p[1],bx,600));s+=fist(104,120,56,80,'u')}
+return s}
+function d2(){const jx=600-S.L*6,f=Math.min(40,S.L*3);let s=DEFS+jacket(60,jx);
+if(S.tw>.02){PAIRS.forEach((p,i)=>s+=twist(142+i*12,p[0],p[1],jx,600,3.2*S.tw));return s}
+if(S.dg>=0){const t=cl(Math.round((S.dp.y-100)/17),0,7);s+=`<rect x="${jx+f}" y="${100+t*17-9}" width="${600-jx-f+60}" height="18" rx="4" fill="#0b63ce" fill-opacity=".12" stroke="#0b63ce" stroke-dasharray="4 3"/>`}
+S.order.forEach((id,i)=>{const yl=137+i*6.5,yr=100+i*17,d=`M${jx-4},${yl} L${jx+f},${yr} L600,${yr}`;
+s+=`<g data-i="${i}" style="cursor:grab" opacity="${S.dg==i?.3:1}">`+(S.sel==i?`<path d="${d}" fill="none" stroke="#ffd93d" stroke-width="15" stroke-linecap="round" opacity=".9"/>`:'')+wireP(d,id,9)+`<path d="${d}" fill="none" stroke="transparent" stroke-width="18"/></g><text x="612" y="${yr+4}" font-size="12" style="fill:${S.hint?'#0a8f4d':'#5b6b80'}">pin${i+1}${S.hint?' '+NMC[TG()[i]]:''}</text>`});
+if(S.dg>=0)s+=`<path d="M${jx+f},${S.dp.y} L600,${S.dp.y}" stroke="#0b63ce" stroke-width="16" opacity=".35" stroke-linecap="round"/>`+wireP(`M${jx+f},${S.dp.y} L600,${S.dp.y}`,S.order[S.dg],10);
+return s+'<text x="60" y="300" font-size="11">มองจากด้านเข็มทองของหัว RJ45: pin 1 อยู่ซ้ายสุด (บนสุดในภาพ)</text>'}
+function d3(){const jx=600-S.L*6,end=S.cut?S.cx:600;let s=DEFS+jacket(60,jx);
+S.order.forEach((id,i)=>s+=wireP(`M${jx-4},${137+i*6.5} L${end},${137+i*6.5}`,id,6)+(S.cut?`<circle cx="${end}" cy="${137+i*6.5}" r="2.6" fill="#d9a441" stroke="#a87a1e" stroke-width=".8"/>`:''));
+if(tut())s+=`<rect x="${jx+63}" y="112" width="15" height="96" fill="#22b573" opacity=".22"/><text x="${jx+70}" y="228" text-anchor="middle" font-size="11">10.5-13mm (TIA ≤13)</text>`;
+if(!S.cut)s+=`<line x1="${S.cx}" x2="${S.cx}" y1="100" y2="216" stroke="#e5484d" stroke-width="2" stroke-dasharray="5 3"/>`+plier(S.cx,0,...gc('ct'))+`<text x="${S.cx}" y="262" text-anchor="middle" font-size="13">untwist ${(Math.min(S.L*6,S.cx-jx)/6).toFixed(1)} mm</text>`;
+else S.order.forEach((id,i)=>{if(600-S.cx>10)s+=`<g transform="rotate(${(i-4)*4} ${S.cx+20} 250)" opacity=".8">${wireP(`M${S.cx+8},${250+i*2} L600,${250+i*2}`,id,5)}</g>`});
+return s+fist(Math.max(70,jx-120),120,56,80,'u')}
+function d4(){const tip=450+S.ox,je=tip-S.w*6;let s=DEFS+jacket(-200,je)+boot(je-150);
+S.order.forEach((id,i)=>s+=wireP(`M${je-3},${137+i*6.5} L${tip},${137+i*6.5}`,id,6)+`<circle cx="${tip}" cy="${137+i*6.5}" r="2.6" fill="#d9a441"/>`);
+s+=`<line x1="612" x2="612" y1="100" y2="215" stroke="#e5484d" stroke-dasharray="4 4"/><text x="612" y="96" text-anchor="middle" font-size="10">strain relief</text><path d="M575 120L590 106H670L685 120Z" fill="#bfe0ff" fill-opacity=".5" stroke="#5aa0e0" stroke-width="2"/><rect x="560" y="120" width="140" height="80" rx="8" fill="#bfe0ff" fill-opacity=".4" stroke="#5aa0e0" stroke-width="2"/><rect x="690" y="122" width="10" height="76" fill="#5aa0e0" opacity=".5"/>`;
+for(let i=0;i<8;i++)s+=`<rect x="652" y="${135+i*6.5}" width="9" height="3" fill="#e0a800"/>`;
+if(S.ox<8)s+='<text x="330" y="120" font-size="16" style="fill:#0b63ce">ลากสายไปทางขวา ➜</text>';
+if(S.fin)s+=S.w>13.2?'<text x="360" y="260" text-anchor="middle" font-size="14" style="fill:#d6334a">คลายเกลียวเกิน 13 มม.! ปลอกไม่เข้าหัว</text>':'<text x="360" y="260" text-anchor="middle" font-size="14" style="fill:#0a8f4d">ปลายสายชนผนังหน้า ปลอกเข้าหัวแล้ว ✓</text>';
+return s}
+function d5(){const p=S.hold,jt=60+p*32,bt=232-p*32,ty=90+p*30,by=230-p*30;let s=DEFS+`<g transform="translate(-250 0)">`+jacket(-200,615,142,44)+boot(486,136,56);
+[0,1,2,3].forEach(i=>s+=wireP(`M610,${150+i*8} L690,${150+i*8}`,S.order[i],6));
+s+=`<rect x="560" y="128" width="140" height="72" rx="8" fill="#bfe0ff" fill-opacity=".4" stroke="#5aa0e0" stroke-width="2"/><rect x="570" y="${jt}" width="130" height="36" rx="6" fill="#3a4452"/><rect x="570" y="${jt}" width="130" height="6" fill="${LB}"/><rect x="570" y="${bt}" width="130" height="36" rx="6" fill="#3a4452"/><rect x="580" y="${jt+36}" width="26" height="10" fill="#9aa5b5"/><rect x="660" y="${jt+36}" width="10" height="24" fill="#e0a800"/><text x="635" y="${jt+26}" text-anchor="middle" style="fill:#fff;font-weight:700;font-size:11px">${gi('cr').lab}</text></g>`;
+s+=hdl(440,jt+18,640,ty,gi('cr').c1,gi('cr').c2)+hdl(440,bt+18,640,by,gi('cr').c1,gi('cr').c2)+fist(590,ty-6,60,by-ty+12,'r');
+s+=`<rect x="160" y="284" width="400" height="14" rx="7" fill="#dde6f1"/><rect x="${160+400*.7}" y="284" width="${400*.25}" height="14" fill="#f0c030" opacity=".7"/><rect x="${160+400*.95}" y="284" width="${400*.05}" height="14" fill="#22b573"/><rect x="160" y="284" width="${400*p}" height="14" rx="7" fill="${LB}"/>`;
+if(S.cdone)s+='<text x="200" y="120" text-anchor="middle" font-size="22" style="fill:#0a8f4d">CLICK! ✓</text>';return s}
+function plug(i,x,y){const d=i?-1:1;return `<g data-pl="${i}" style="cursor:grab" transform="translate(${x} ${y}) scale(${d} 1)"><rect x="0" y="-9" width="14" height="18" fill="#dff0ff" fill-opacity=".9" stroke="#5aa0e0"/><rect x="14" y="-13" width="26" height="26" rx="3" fill="#dff0ff" fill-opacity=".85" stroke="#5aa0e0" stroke-width="2"/><path d="M2 -5H12M2 0H12M2 5H12" stroke="#e0a800" stroke-width="2"/><rect x="38" y="-12" width="22" height="24" rx="6" fill="#4aa3ff" stroke="${LB}" stroke-width="1.5"/></g><text x="${x+d*30}" y="${y+32}" text-anchor="middle" font-size="10">ปลาย ${i+1}</text>`}
+function unit(x,t,lbl,leds,sock){let s=`<rect x="${x}" y="24" width="172" height="150" rx="14" fill="#fff" stroke="#b9c8dc" stroke-width="2"/><path d="M${x} 54V38A14 14 0 0 1 ${x+14} 24H${x+158}A14 14 0 0 1 ${x+172} 38V54Z" fill="${gi('ts').c1}"/><text x="${x+14}" y="45" style="fill:#fff;font-weight:700;font-size:13px">${gi('ts').lab}</text><text x="${x+158}" y="45" text-anchor="end" style="fill:#cfe2ff;font-size:9px">${lbl}</text><rect x="${sock}" y="92" width="16" height="36" rx="3" fill="#2a3340"/>`;
+for(let i=0;i<8;i++)s+=`<circle cx="${x+20+i*17}" cy="68" r="6" fill="${leds[i]}" stroke="#b9c8dc"/><text x="${x+20+i*17}" y="83" text-anchor="middle" font-size="8">${i+1}</text>`;return s}
+function d6(){const a=S.pp[0],b=S.pp[1],E=CAB[P.cable].e,off='#e1e8f1',ok='#22b573',ng='#e5484d';let s=DEFS;
+const done=S.fdone||S.log.length>2,lcd=done?(S.link==0?'FAIL':S.split?'SPLIT PAIR':'PASS '+S.link+'M'):S.testing?`TEST ${S.tstep}/8`:S.ready?'READY':'NO CABLE';
+const L=[],R=[];for(let i=0;i<8;i++){const on=i<S.tstep,fj=[...Array(S.tstep).keys()].filter(j=>K(j)==i);L.push(on?(K(i)==X(i)?ok:ng):off);R.push(fj.length?(fj.every(j=>K(j)==X(j))?ok:ng):off)}
+s+=unit(14,0,'TX-1302 · '+E[0],L,186)+unit(534,0,'REMOTE · '+E[1],R,520);
+s+=`<rect x="34" y="94" width="132" height="22" rx="4" fill="#0e2a2a"/><text x="100" y="109" text-anchor="middle" style="fill:${S.link==0&&done?'#ff9a9a':'#7dffd0'};font-size:11px">${lcd}</text><g data-t="1" style="cursor:pointer"><rect x="34" y="128" width="70" height="30" rx="15" fill="${S.ready&&!S.testing?LB:'#c9d4e3'}"/><text x="69" y="148" text-anchor="middle" style="fill:#fff;font-weight:700;font-size:12px">TEST</text></g>`;
+const x0=a.x+58,x1=b.x-58,c=`M${x0},${a.y} C${x0+80},${a.y+95} ${x1-80},${b.y+95} ${x1},${b.y}`;
+s+=`<path d="${c}" fill="none" stroke="#2f5fae" stroke-width="12" stroke-linecap="round"/><path d="${c}" fill="none" stroke="#6aa9ee" stroke-width="8" stroke-linecap="round"/>`+plug(0,a.x,a.y)+plug(1,b.x,b.y);
+if(!S.ready&&!S.testing)s+='<text x="360" y="304" text-anchor="middle" font-size="12" style="fill:#b87400">ลากหัวสายแต่ละปลายไปเสียบช่องของเครื่องเทส</text>';
+return s}
+function spark(){const pa=S.pa||[],n=S.pc||0,mx=Math.max(1,...pa.filter(v=>v!=null));let s='';
+for(let i=0;i<10;i++){const x=12+i*28;if(i>=n){s+=`<rect x="${x}" y="54" width="18" height="2" fill="#1d3a4f"/>`;continue}const v=pa[i];
+s+=v==null?`<text x="${x+9}" y="40" text-anchor="middle" style="fill:#ff6b6b!important;font-size:18px">✕</text>`:`<rect x="${x}" y="${56-v/mx*44}" width="18" height="${v/mx*44}" rx="2" fill="#7dffb0"/><text x="${x+9}" y="${50-v/mx*44}" text-anchor="middle" style="font-size:8px">${v}</text>`}
+return `<div class="ping">📡 PING 192.168.1.1 · latency (ms) · ✕ = packet loss<svg viewBox="0 0 300 62">${s}</svg></div>`}
+function ctl(){const n=S.step;
+if(n==2)return `${tut()?'':`<button class="b" onclick="if(!S.hint&&!S.hu){S.hu=1;S.hintUsed++}S.hint=!S.hint;draw()">📋 ${S.hint?'ซ่อน':'ดู'} pinout</button>`}<button class="b" onclick="if(S.hist.length)S.order=S.hist.pop();draw()">↩ ย้อนกลับ</button><button class="b p" onclick="go(3)">ไปขั้นตัดสาย ▶</button><span class="mut">pin ที่ยังไม่ตรง: ${errs()}</span>`;
+if(n==6)return (S.pc?spark():'')+(S.log.length?`<pre class="term">${S.log.join('\n')}</pre>`:'')+(S.fdone?`<button class="b p" onclick="after()">${P.mode=='pvp'&&M.who==0?'ส่งต่อให้เพื่อน':P.mode=='ta'&&performance.now()-M.ta0<3e5?'สายถัดไป ▶ (เหลือ '+Math.round((3e5-performance.now()+M.ta0)/1000)+' วิ)':'ดูผลรวม'}</button>`:'');
+return ''}
+function draw(){if(P.scr!='play'||!S)return;$('#wo').textContent=`${M.wo} · ${CAB[P.cable].d} · Cat5e UTP · 🛠 ${gi('sp').lab}/${gi('ct').lab}/${gi('cr').lab}`;
+$('#steps').innerHTML=STEPS.map((n,i)=>`<span class="${i+1==S.step?'on':i+1<S.step||S.step==6&&i<5?'done':''}">${n}</span>`).join('')+`<span>ปลาย ${Math.min(2,S.e+1)}/2</span>`;
+$('#st').innerHTML=[0,d1,d2,d3,d4,d5,d6][S.step]()+hands();$('#say').textContent=S.msg;$('#face').innerHTML=face(S.mood);$('#ctl').innerHTML=ctl();const tm=$('.term');if(tm)tm.scrollTop=tm.scrollHeight}
+
+/* ---------- ควบคุม ---------- */
+function startHold(){S.holding=true;S.hold=0;last=performance.now();requestAnimationFrame(loop)}
+function loop(t){if(!S.holding)return;const dt=Math.min(.05,(t-last)/1000);last=t;S.hold=Math.min(1,S.hold+dt*.8*(S.step==5?gi('cr').spd:1));draw();requestAnimationFrame(loop)}
+function anim(ms,f,cb){const t0=performance.now();(function k(t){const p=Math.min(1,(t-t0)/ms);f(p);draw();p<1?requestAnimationFrame(k):cb&&cb()})(t0)}
+function pick(i){if(S.sel<0)S.sel=i;else{if(S.sel!=i){S.hist.push(S.order.slice());const o=S.order;[o[S.sel],o[i]]=[o[i],o[S.sel]];beep(520,.06)}S.sel=-1}}
+function up1(){S.holding=false;const h=S.hold;
+if(h<.55){S.hold=0;S.mood='oh';S.msg='ใบมีดยังไม่ทะลุปลอก! กดค้างนานขึ้นแล้วปล่อยในโซนเขียว'}
+else{S.L=(600-S.bx)/6;S.nick=h>gi('sp').nk;S.done=1;const d=Math.abs(S.L-30);S.sc.strip=Math.max(0,Math.round(25-Math.min(25,d*gi('sp').sl)-(S.nick?8:0)));S.hold=0;beep(240,.12,'sawtooth');S.mood=S.nick||d>3?'oh':'happy';S.msg=(S.nick?'อุ๊ย ใบมีดลึกไป บาดทองแดงแล้ว! ':'ปอกปลอกสะอาด! ')+(d<=3?'ความยาว ~30 มม. กำลังดี':S.L>33?`ปอกยาวไป (${S.L.toFixed(0)} มม.)`:`ปอกสั้นไป (${S.L.toFixed(0)} มม.)`);pop(d<=3&&!S.nick?'PERFECT! +'+S.sc.strip:'+'+S.sc.strip,d<=3&&!S.nick?'#0a8f4d':'#d98a00');anim(700,p=>S.slide=p,()=>setTimeout(()=>go(2),700))}}
+function doCut(){S.cut=1;const jx=600-S.L*6;S.cx=cl(S.cx,Math.min(600,jx+30),600);S.w=Math.min(S.L,(S.cx-jx)/6);const w=S.w;S.sc.cut=Math.max(0,Math.round(w>13+gi('ct').tol?20-(w-13-gi('ct').tol)*5:w<10.5-gi('ct').tol?20-(10.5-gi('ct').tol-w)*4:20));beep(900,.05);pop(S.sc.cut>=18?'CLEAN CUT! +'+S.sc.cut:'+'+S.sc.cut,S.sc.cut>=18?'#0a8f4d':'#d98a00');S.mood=S.sc.cut>=18?'happy':'oh';S.msg=S.sc.cut>=18?`ตัดได้ ${w.toFixed(1)} มม. อยู่ในมาตรฐาน ปลายเสมอสวย!`:w>13?`ตัดไว้ ${w.toFixed(1)} มม. เกินมาตรฐาน 13 มม.`:`ตัดไว้ ${w.toFixed(1)} มม. สั้นไปหน่อย`;setTimeout(()=>go(4),1300)}
+function up5(){S.holding=false;const h=S.hold>=gi('cr').pf?Math.max(S.hold,.95):S.hold;
+if(h<.7){S.hold=0;S.mood='oh';S.msg='ยังย้ำไม่สุด เข็มทองยังไม่จิกสาย ลองกดค้างอีกครั้ง'}
+else{S.cdone=1;S.sc.crimp=h>=.95?15:8;beep(160,.15);pop(h>=.95?'CLICK! +15':'+8',h>=.95?'#0a8f4d':'#d98a00');S.mood='happy';S.msg=h>=.95?'กึก! ย้ำสุดแรงพอดี':'ย้ำได้แต่ไม่สุด เข็มอาจจิกไม่ลึกพอ';setTimeout(endDone,1100)}}
+const st=$('#st'),pt=e=>{const r=st.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*720,y:(e.clientY-r.top)/r.height*320}};
+st.onpointerdown=e=>{if(!S||P.scr!='play')return;const p=pt(e),n=S.step;try{st.setPointerCapture(e.pointerId)}catch(_){}
+if(n==1&&!S.done&&!S.holding){S.bx=cl(p.x,300,590);startHold();beep(300,.05)}
+else if(n==2&&S.tw<.02){const g=e.target.closest('[data-i]');if(g){S.dg=+g.dataset.i;S.dp=p;S.d0=p}}
+else if(n==3&&!S.cut)S.cx=cl(p.x,Math.min(600,600-S.L*6+30),600);
+else if(n==4&&!S.fin){S.drag=1;S.anc=p.x-S.ox}
+else if(n==5&&!S.cdone&&!S.holding){startHold();beep(260,.05)}
+else if(n==6){const g=e.target.closest('[data-pl]');if(g&&!S.testing){const i=+g.dataset.pl;S.pg=i;S.po={x:S.pp[i].x-p.x,y:S.pp[i].y-p.y};S.seat[i]=0;S.ready=0}else if(e.target.closest('[data-t]')&&S.ready&&!S.testing)runTest()}
+draw()};
+st.onpointermove=e=>{if(!S||P.scr!='play')return;const p=pt(e),n=S.step;
+if(n==1&&!S.done&&!S.holding){S.bx=cl(p.x,300,590);draw()}
+else if(n==2&&S.dg>=0){S.dp=p;draw()}
+else if(n==3&&!S.cut){S.cx=cl(p.x,Math.min(600,600-S.L*6+30),600);draw()}
+else if(n==4&&S.drag){S.ox=cl(p.x-S.anc,0,240);if(S.ox>=238){S.ox=240;S.drag=0;S.fin=1;S.sc.ins=S.w<=13.2?15:S.w<=15?8:3;beep(420,.1);S.mood=S.w>13.2?'sad':'happy';S.msg=S.w>13.2?'ปลายชนผนังแล้ว แต่ปลอกค้างอยู่นอกหัว สายคลายเกลียวยาวไป!':'เข้าหัวสนิท ปลายสายชนผนังหน้าครบ 8 เส้น!';setTimeout(()=>go(5),1300)}draw()}
+else if(n==6&&S.pg>=0){S.pp[S.pg]={x:cl(p.x+S.po.x,20,700),y:cl(p.y+S.po.y,20,300)};draw()}};
+st.onpointerup=st.onpointercancel=()=>{if(!S||P.scr!='play')return;const n=S.step;
+if(n==1&&S.holding)up1();else if(n==3&&!S.cut)doCut();else if(n==4)S.drag=0;else if(n==5&&S.holding)up5();
+else if(n==2&&S.dg>=0){const idx=cl(Math.round((S.dp.y-100)/17),0,7),mv=Math.hypot(S.dp.x-S.d0.x,S.dp.y-S.d0.y);if(mv<6)pick(S.dg);else if(idx!=S.dg){S.hist.push(S.order.slice());const o=S.order;[o[S.dg],o[idx]]=[o[idx],o[S.dg]];beep(520,.06)}S.dg=-1}
+else if(n==6&&S.pg>=0){const sp=[{x:196,y:110},{x:524,y:110}][S.pg];if(Math.hypot(S.pp[S.pg].x-sp.x,S.pp[S.pg].y-sp.y)<50){S.pp[S.pg]={...sp};S.seat[S.pg]=1;beep(700,.06)}S.pg=-1;S.ready=S.seat[0]&&S.seat[1]?1:0;if(S.ready)S.msg='เสียบครบทั้งสองปลายแล้ว! กดปุ่ม TEST บนเครื่องเทสได้เลย'}
+draw()};
+render();
+</script>
+</body>
+</html>
